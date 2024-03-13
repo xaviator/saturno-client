@@ -2,23 +2,18 @@
 
 namespace Xaviator\SaturnoClient;
 
+use GuzzleHttp\Client;
+
 class JokeFactory
 {
 
-    protected $jokes = [
-        'Joke 1',
-        'Joke 2',
-        'Joke 3',
-        'Joke 4',
-        'Joke 5',
-        'Joke 6'
-    ];
+    const API_ENDPOINT = 'https://api.chucknorris.io/jokes/random';
 
-    public function __construct(array $jokes = null)
+    protected $client;
+
+    public function __construct(Client $client = null)
     {
-        if ($jokes) {
-            $this->jokes = $jokes;
-        }
+        $this->client = $client ?: new Client();
     }
 
     /**
@@ -26,7 +21,11 @@ class JokeFactory
      */
     public function getRandomJoke()
     {
-        return $this->jokes[array_rand($this->jokes)];
+        $response = $this->client->get(self::API_ENDPOINT);
+
+        $joke = json_decode($response->getBody()->getContents());
+
+        return $joke->value;
     }
 
 }
